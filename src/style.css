@@ -19,6 +19,7 @@ body {
   display: table-cell;
 }
 
+/** DARK MODE START */
 
 body {
   margin: 0;
@@ -131,6 +132,14 @@ h1, p {
   padding: 10px; /* Add some padding */
 }
 
+input {
+  color: #000000; /* Light text color */
+  border-color: black;
+  border: 2px solid black;
+  border-radius: 5px;
+  padding: 10px; /* Add some padding */
+}
+
 .dark-button {
   background-color: #333; /* Dark background color */
   color: #fff; /* Light text color */
@@ -149,3 +158,45 @@ h1, p {
   box-shadow: 0 0 5px #fff; /* Add a white box-shadow when focused */
 }
 
+/** DARK MODE END */
+
+
+/** index buttons start */
+.button-container {
+  position: fixed;
+  bottom: 10px;
+  left: 10%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.index-button-light {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #4CAF50;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.index-button-light:hover {
+  background-color: #0a390c;
+}
+
+.index-button-dark {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2196f3;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.index-button-dark:hover {
+  background-color: #0d47a1;
+}
+/** index butons end */

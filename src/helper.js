@@ -25,3 +25,15 @@ function getHoursBetweenDates(date1, date2) {
   
     return hours;
 }
+
+function createIndexButtons(count)
+{
+   for(var i = 0; i < count; i++)
+   {
+        var newButton = $("<button>");
+        newButton.addClass("index-button");
+        newButton.addClass("index-button-light");
+        newButton.text(i + 1);
+        $(".button-container").append(newButton);
+   }
+}
