@@ -199,4 +199,9 @@ input {
 .index-button-dark:hover {
   background-color: #0d47a1;
 }
+
+.current-index {
+  background-color: #032962;
+
+}
 /** index butons end */

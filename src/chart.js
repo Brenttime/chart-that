@@ -263,5 +263,8 @@ for (var i = 0; i < buttons.length; i++) {
   buttons[i].addEventListener("click", function() {
     currentSet = parseInt(this.innerHTML) - 1; // 0 Based Offset
     console.log(`User Toggled On Series ${this.innerHTML}`);
+    // Remove current-index class from the last index and add it to the new one
+    $('.current-index').toggleClass('current-index');
+    $(this).toggleClass('current-index');
   });
 }
