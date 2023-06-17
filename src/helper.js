@@ -25,3 +25,21 @@ function getHoursBetweenDates(date1, date2) {
   
     return hours;
 }
+
+function createIndexButtons(count)
+{
+   for(var i = 0; i < count; i++)
+   {
+        var newButton = $("<button>");
+        newButton.addClass("index-button");
+        newButton.addClass("index-button-light");
+        newButton.text(i + 1);
+
+        // 1st index gets preselected as the toggled series
+        if(i == 0)
+        {
+            newButton.addClass("current-index");
+        }
+        $(".button-container").append(newButton);
+   }
+}

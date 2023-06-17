@@ -16,7 +16,33 @@ popup.right = 30;
 popup.defaultStyles = false;
 
 // Setup The Data Axis as a global access variable
-var newSeries 
+var seriesSet = [] 
+var seriesLineColors = [ 
+"#2196f3", // Blue
+"#f44336", // Red
+"#4caf50", // Green
+"#ff9800", // Orange
+"#9c27b0", // Purple
+"#009688", // Teal
+"#ff5722", // Deep Orange
+"#673ab7", // Deep Purple
+"#8bc34a", // Lime
+"#e91e63"  // Pink
+];
+var numberOfSeries = 3;
+createIndexButtons(numberOfSeries);
+var buttons = document.getElementsByClassName("index-button");
+var currentSet = 0;
+
+function InvalidateAllSeries()
+{
+  if(seriesSet.length > 0)
+  {
+    seriesSet.forEach((series) => {
+      series.invalidateData();
+    });
+  }
+}
 
 var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
 dateAxis.renderer.grid.template.location = 0;
@@ -53,8 +79,11 @@ function TimeChange(min, max) {
 
   // Required to rerender chart view on client
   chart.validateData(); 
-  newSeries.invalidateData();
+
+  InvalidateAllSeries();
 }
+
+TimeChange(dateAxis.min, dateAxis.max);
 
 var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
 valueAxis.max = 100;
@@ -70,21 +99,20 @@ chart.cursor = new am4charts.XYCursor();
 chart.cursor.xAxis = dateAxis;
 chart.cursor.behavior = "none";
 
-newSeries = chart.series.push(new am4charts.LineSeries());
 var addingPointsDisabled = false;
 
-// Time Change MUST run after the new series has been made a line series
-TimeChange(dateAxis.min, dateAxis.max);
-
-addSeries();
-
-function addSeries() {
+function addSeries(index) {
+  var newSeries = chart.series.push(new am4charts.LineSeries());
   newSeries.data = []
   newSeries.dataFields.dateX = "date";
   newSeries.dataFields.valueY = "newValue";
   newSeries.interpolationDuration = 0;
+  newSeries.stroke = am4core.color(seriesLineColors[index]);
+  seriesSet.push(newSeries);
 
   var bullet = newSeries.bullets.push(new am4charts.CircleBullet());
+  bullet.circle.fill = am4core.color(seriesLineColors[index]); 
+  bullet.circle.stroke = am4core.color(seriesLineColors[index]);
   bullet.draggable = true;
 
   bullet.events.on("dragged", function (event) {
@@ -142,19 +170,22 @@ function addSeries() {
 var interaction = am4core.getInteraction();
 
 interaction.events.on("up", function (event) {
-  if (newSeries && !addingPointsDisabled && chart.cursor.visible) {
+  var currentSeries = seriesSet[currentSet];
+  if (currentSeries && !addingPointsDisabled && chart.cursor.visible) {
     var date = series.tooltipDataItem.dateX;
     var point = am4core.utils.documentPointToSprite(event.pointer.point, chart.seriesContainer);
     var value = valueAxis.yToValue(point.y);
     if (value > valueAxis.min && value < valueAxis.max) {
-      newSeries.data.push({ date: date, newValue: value });
+      currentSeries.data.push({ date: date, newValue: value });
       sortData();
-      newSeries.invalidateData();
+      currentSeries.invalidateData();
     }
   }
 })
+
 function sortData() {
-  newSeries.data.sort(function (a, b) {
+  var currentSeries = seriesSet[currentSet];
+  currentSeries.data.sort(function (a, b) {
     var atime = a.date.getTime();
     var btime = b.date.getTime();
 
@@ -177,13 +208,16 @@ function ChangeYAxisMax(yAxisMax) {
   
   // Required to rerender chart view on client
   chart.validateData(); 
-  newSeries.invalidateData();
+  //newSeries.invalidateData();
+  InvalidateAllSeries();
 }
 
 function ClearChart() {
   console.log("Clearning Chart");
-  newSeries.data = []
-  chart.removeData(chart.series[0] = null);
+  seriesSet.forEach((series, localIndex) => {
+    series.data = [];
+    chart.removeData(chart.series[localIndex] = null);
+  });
   chart.validateData(); // Required to rerender chart view on client
 }
 
@@ -218,3 +252,19 @@ $("#endTime").change(function () {
 // Set Chart to be 90% of the Screen
 var chartContainer = document.getElementById("chartdiv");
 chartContainer.style.height = (window.innerHeight * 0.9) + "px";
+
+for(var i =0; i< numberOfSeries; i++)
+{
+  addSeries(i);
+}
+
+// Add click event listeners to the buttons
+for (var i = 0; i < buttons.length; i++) {
+  buttons[i].addEventListener("click", function() {
+    currentSet = parseInt(this.innerHTML) - 1; // 0 Based Offset
+    console.log(`User Toggled On Series ${this.innerHTML}`);
+    // Remove current-index class from the last index and add it to the new one
+    $('.current-index').toggleClass('current-index');
+    $(this).toggleClass('current-index');
+  });
+}
