@@ -16,16 +16,14 @@ popup.right = 30;
 popup.defaultStyles = false;
 
 // Setup The Data Axis as a global access variable
-var seriesSet = [] 
+var seriesSet = []
 var numberOfSeries = 3;
 createIndexButtons(numberOfSeries);
 var buttons = document.getElementsByClassName("index-button");
 var currentSet = 0;
 
-function InvalidateAllSeries()
-{
-  if(seriesSet.length > 0)
-  {
+function InvalidateAllSeries() {
+  if (seriesSet.length > 0) {
     seriesSet.forEach((series) => {
       series.invalidateData();
     });
@@ -66,7 +64,7 @@ function TimeChange(min, max) {
   chart.data = data;
 
   // Required to rerender chart view on client
-  chart.validateData(); 
+  chart.validateData();
 
   InvalidateAllSeries();
 }
@@ -99,7 +97,7 @@ function addSeries(index) {
   seriesSet.push(newSeries);
 
   var bullet = newSeries.bullets.push(new am4charts.CircleBullet());
-  bullet.circle.fill = am4core.color(seriesLineColors[index]); 
+  bullet.circle.fill = am4core.color(seriesLineColors[index]);
   bullet.circle.stroke = am4core.color(seriesLineColors[index]);
   bullet.draggable = true;
 
@@ -193,9 +191,9 @@ function ChangeYAxisMax(yAxisMax) {
   console.log(`Change chart to Y-Axis from Value ${valueAxis.max} to ${yAxisMax}`)
   valueAxis.max = Number(yAxisMax);
   valueAxis.min = Number(0);
-  
+
   // Required to rerender chart view on client
-  chart.validateData(); 
+  chart.validateData();
   //newSeries.invalidateData();
   InvalidateAllSeries();
 }
@@ -241,14 +239,13 @@ $("#endTime").change(function () {
 var chartContainer = document.getElementById("chartdiv");
 chartContainer.style.height = (window.innerHeight * 0.9) + "px";
 
-for(var i =0; i< numberOfSeries; i++)
-{
+for (var i = 0; i < numberOfSeries; i++) {
   addSeries(i);
 }
 
 // Add click event listeners to the buttons
 for (var i = 0; i < buttons.length; i++) {
-  buttons[i].addEventListener("click", function() {
+  buttons[i].addEventListener("click", function () {
     currentSet = parseInt(this.innerHTML) - 1; // 0 Based Offset
     console.log(`User Toggled On Series ${this.innerHTML}`);
 
@@ -257,3 +254,26 @@ for (var i = 0; i < buttons.length; i++) {
     $(this).toggleClass(currentIndexClassName);
   });
 }
+
+// Bind click event to the screenshot button
+$("#screenshotBtn").click(function() {
+  var $chartDiv = $("#chartdiv");
+  var $body = $("body");
+
+  html2canvas($chartDiv[0], {
+    backgroundColor: $body.css("background-color")
+  }).then(function(canvas) {
+    canvas.toBlob(function(blob) {
+      navigator.clipboard.write([
+        new ClipboardItem({
+          "image/png": blob
+        })
+      ]).then(function() {
+        console.log("Chart image copied to clipboard successfully.");
+      }).catch(function(error) {
+        console.error("Error copying chart image to clipboard:", error);
+        alert("Error copying chart image to clipboard, likely due to permissions error");
+      });
+    }, "image/png");
+  });
+});

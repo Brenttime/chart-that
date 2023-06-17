@@ -151,6 +151,10 @@ input {
   background-color: #555; /* Darker background color on hover */
 }
 
+.regular-button:active {
+  background-color: white; /* Darker background color on hover */
+}
+
 .dark-button {
   background-color: #333; /* Dark background color */
   color: #fff; /* Light text color */
