@@ -17,18 +17,6 @@ popup.defaultStyles = false;
 
 // Setup The Data Axis as a global access variable
 var seriesSet = [] 
-var seriesLineColors = [ 
-"#2196f3", // Blue
-"#f44336", // Red
-"#4caf50", // Green
-"#ff9800", // Orange
-"#9c27b0", // Purple
-"#009688", // Teal
-"#ff5722", // Deep Orange
-"#673ab7", // Deep Purple
-"#8bc34a", // Lime
-"#e91e63"  // Pink
-];
 var numberOfSeries = 3;
 createIndexButtons(numberOfSeries);
 var buttons = document.getElementsByClassName("index-button");
@@ -263,8 +251,9 @@ for (var i = 0; i < buttons.length; i++) {
   buttons[i].addEventListener("click", function() {
     currentSet = parseInt(this.innerHTML) - 1; // 0 Based Offset
     console.log(`User Toggled On Series ${this.innerHTML}`);
+
     // Remove current-index class from the last index and add it to the new one
-    $('.current-index').toggleClass('current-index');
-    $(this).toggleClass('current-index');
+    $(`.${currentIndexClassName}`).toggleClass(currentIndexClassName);
+    $(this).toggleClass(currentIndexClassName);
   });
 }

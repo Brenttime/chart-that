@@ -37,14 +37,10 @@ toggleCheckbox.addEventListener('change', () => {
         moonIcon.style.display = 'block';
         sunIcon.style.display = 'none';
         DarkChart();
-        $('.index-button').toggleClass('index-button-dark');
-        $('.index-button').toggleClass('index-button-light');
     } else {
         moonIcon.style.display = 'none';
         sunIcon.style.display = 'block';
         lightChart();
-        $('.index-button').toggleClass('index-button-light');
-        $('.index-button').toggleClass('index-button-dark');
     }
 });
 
@@ -57,10 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('dark-theme');
         $('input').addClass('dark-input'); // Add Dark-Input theme for dark mode compliance
         $('button').addClass('dark-button');
-
-        // Index Buttons should be dark too
-        $('.index-button').addClass('index-button-dark');
-        $('.index-button').removeClass('index-button-light');
 
         moonIcon.style.display = 'block';
         sunIcon.style.display = 'none';
