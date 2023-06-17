@@ -1,0 +1,151 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+#chartdiv {
+  width: 100%;
+}
+
+.ampopup-content {
+  background: rgb(60, 171, 255)!important;
+  background-color: rgba(60, 171, 255, 0.8)!important;
+}
+
+.container {
+  display: table;
+  width: 100%;
+}
+.container div {
+  display: table-cell;
+}
+
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.dark-mode-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.dark-mode-toggle input {
+  display: none;
+}
+
+.dark-mode-toggle label {
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+  position: relative;
+  cursor: pointer;
+}
+
+.dark-mode-toggle .slider {
+  background-color: #4CAF50;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.4s;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.dark-mode-toggle .slider:before {
+  content: "";
+  height: 30px;
+  width: 30px;
+  background-color: white;
+  transition: 0.4s;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  border-radius: 50%;
+}
+
+.dark-mode-toggle input:checked + label .slider {
+  background-color: #2196F3;
+}
+
+.dark-mode-toggle input:checked + label .slider:before {
+  transform: translateX(30px);
+}
+
+.dark-mode-toggle #sunIcon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+}
+
+.dark-mode-toggle input:checked + label #sunIcon {
+  display: block;
+}
+
+.dark-mode-toggle #moonIcon {
+  display: none;
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+}
+
+.dark-mode-toggle input:checked + label #moonIcon {
+  display: none;
+}
+
+.dark-theme {
+  --background-color: #1e1e1e;
+  --text-color: #ffffff;
+}
+
+.light-theme {
+  --background-color: #ffffff;
+  --text-color: #000000;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.5s, color 0.5s;
+  margin: 0;
+  padding: 0;
+}
+
+h1, p {
+  color: var(--text-color);
+}
+
+.dark-input {
+  background-color: #333; /* Dark background color */
+  color: #fff; /* Light text color */
+  border: none; /* Remove border */
+  padding: 10px; /* Add some padding */
+}
+
+.dark-button {
+  background-color: #333; /* Dark background color */
+  color: #fff; /* Light text color */
+  border: none; /* Remove border */
+  padding: 10px 20px; /* Add some padding */
+}
+
+/* For the button element when hovered */
+.dark-button:hover {
+  background-color: #555; /* Darker background color on hover */
+}
+
+/* For the button element when focused */
+.dark-button:focus {
+  outline: none; /* Remove the default focus outline */
+  box-shadow: 0 0 5px #fff; /* Add a white box-shadow when focused */
+}
+

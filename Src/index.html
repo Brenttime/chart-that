@@ -1,0 +1,48 @@
+
+<!--Included JS-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="style.css">
+
+<body>
+    <div class="dark-mode-toggle">
+        <input type="checkbox" id="toggleCheckbox">
+        <label for="toggleCheckbox">
+            <span class="slider">
+                <i id="sunIcon" class="fas fa-sun"></i>
+                <i id="moonIcon" class="fas fa-moon"></i>
+            </span>
+        </label>
+    </div>
+    
+    <div id="chartdiv"></div>
+    <div class="container">
+        <div>
+            <span>Y-Axis Scale Value</span>
+            <input type="number" id="yAxisScale"></input>
+        </div>
+        <div>
+            <span>Start Date:</span>
+            <input type="string" id="startTime"></input>
+        </div>
+        <div>
+            <span>End Date:</span>
+            <input type="string" id="endTime"></input>
+        </div>
+        <div>
+            <button id="clear">Clear</button>
+        </div>
+    </div>
+</body>
+
+
+
+<!--Ending JS-->
+<script src="helper.js"></script>
+<script src="chart.js"></script>
+<script src="dark.js"></script>
