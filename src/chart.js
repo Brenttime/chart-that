@@ -7,7 +7,9 @@ chart.paddingRight = 20;
 
 var data = [];
 var yAxisScale = 100; // Starting Max Value of Y-Axis
+var xAxisScale = 30; // Starting x Axis Scale
 $("#yAxisScale").attr('value', yAxisScale);
+$("#xAxisScale").attr('value', xAxisScale);
 
 // Popup Settings
 var popup = chart.openPopup("<div>Click on plot area to add points<br>Drag bullets to change values<br>Double click on bullet to remove</div>");
@@ -17,7 +19,7 @@ popup.defaultStyles = false;
 
 // Setup The Data Axis as a global access variable
 var seriesSet = []
-var numberOfSeries = 3;
+var numberOfSeries = 5;
 createIndexButtons(numberOfSeries);
 var buttons = document.getElementsByClassName("index-button");
 var currentSet = 0;
@@ -34,11 +36,11 @@ var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
 dateAxis.renderer.grid.template.location = 0;
 dateAxis.renderer.minGridDistance = 100;
 dateAxis.renderer.maxGridDistance = 100;
-dateAxis.dateFormats.setKey("hour", "HH:mm"); // Format labels as "HH:mm"
+dateAxis.dateFormats.setKey("minute", "HH:mm"); // Format labels as "HH:mm"
 
 // Set base interval
 dateAxis.baseInterval = {
-  timeUnit: "hour",
+  timeUnit: "minute",
   count: 1
 };
 
@@ -46,15 +48,24 @@ dateAxis.baseInterval = {
 var today = new Date();
 dateAxis.max = Date.parse(today);
 dateAxis.min = today.setDate(today.getDate() - 1);
+$("#startTime").attr('value', new Date(dateAxis.min));
+$("#endTime").attr('value', new Date(dateAxis.max));
+
 
 // Change the X-Axis to adjust for min and max time range
-function TimeChange(min, max) {
-  var numberOfHours = getHoursBetweenDates(min, max);
+function TimeChange(min, max, scale=xAxisScale) {
+  var numberOfMinutes = getMinutesBetweenDates(min, max);
   var startTime = new Date(min);
+  data = []; // reset data
 
-  for (var i = 0; i <= numberOfHours; i++) {
-    data.push({ date: new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate(), startTime.getHours() + i), value: yAxisScale });
+  for (var i = 0; i <= (numberOfMinutes); i++) {
+    if(i % scale == 0)
+    {
+      data.push({ date: new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate(), startTime.getHours(), i), value: yAxisScale });
+    }
   }
+
+  console.log(data);
 
   // reset Min/Max for chart view
   dateAxis.max = max;
@@ -213,6 +224,14 @@ function ClearChart() {
 $("#yAxisScale").change(function () {
   ChangeYAxisMax(this.value);
 });
+
+/**
+ * Change Scale of Y-Axis (Max)
+ */
+$("#xAxisScale").change(function () {
+  TimeChange(dateAxis.min, dateAxis.max, this.value);
+});
+
 
 /**
  * Clear Chart Button Event 
