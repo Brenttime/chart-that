@@ -65,8 +65,6 @@ function TimeChange(min, max, scale=xAxisScale) {
     }
   }
 
-  console.log(data);
-
   // reset Min/Max for chart view
   dateAxis.max = max;
   dateAxis.min = min;
