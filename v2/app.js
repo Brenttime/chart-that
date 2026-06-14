@@ -397,7 +397,7 @@ function isInChartArea(canvasX, canvasY) {
 // ─── Pointer Events ──────────────────────────────────────────────────────────
 canvas.addEventListener('pointerdown', (e) => {
   if (e.button === 2) return;
-  canvas.setPointerCapture(e.pointerId);
+  try { canvas.setPointerCapture(e.pointerId); } catch(_) {}
 
   const { canvasX, canvasY } = getCanvasPoint(e);
   pointerDownPos = { canvasX, canvasY, pointerId: e.pointerId };
@@ -449,7 +449,7 @@ canvas.addEventListener('pointermove', (e) => {
 
 canvas.addEventListener('pointerup', (e) => {
   if (e.button === 2) return;
-  canvas.releasePointerCapture(e.pointerId);
+  try { canvas.releasePointerCapture(e.pointerId); } catch(_) {}
 
   const { canvasX, canvasY } = getCanvasPoint(e);
 

@@ -211,6 +211,7 @@ body {
   display: flex;
   flex: 1;
   overflow: hidden;
+  min-height: 0;
 }
 
 /* ─── Canvas Area (main chart) ────────────────────────────────────────────── */
@@ -220,6 +221,7 @@ body {
   flex-direction: column;
   padding: 16px;
   min-width: 0;
+  min-height: 0;
 }
 
 /* ─── Series Strip ────────────────────────────────────────────────────────── */
@@ -293,6 +295,8 @@ body {
   border-radius: var(--radius);
   padding: 16px;
   box-shadow: var(--card-shadow);
+  min-height: 0;
+  overflow: hidden;
   transition: background var(--transition), border-color var(--transition);
 }
 
