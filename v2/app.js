@@ -1,7 +1,7 @@
 /**
  * Chart That v2 — Sketch Your Data
  * Rewritten with PointerEvent API for reliable cross-platform mouse/touch handling.
- * Fixes macOS click registration bug caused by Chart.js + dragdata plugin event interception.
+ * Supports both numeric and datetime x-axis modes.
  */
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -27,6 +27,7 @@ let draggedPointIndex = null;
 let isDragging = false;
 let hintDismissed = false;
 let pointerDownPos = null;
+let axisMode = 'numeric'; // 'numeric' or 'datetime'
 
 // ─── DOM Refs ────────────────────────────────────────────────────────────────
 const canvas = document.getElementById('chartCanvas');
@@ -46,13 +47,49 @@ segButtons.forEach(btn => {
   });
 });
 
+// ─── Axis Type Toggle ────────────────────────────────────────────────────────
+const axisTypeButtons = document.querySelectorAll('#axisTypeControl .seg-btn');
+const numericFields = document.getElementById('numericFields');
+const datetimeFields = document.getElementById('datetimeFields');
+
+function initDateTimeDefaults() {
+  const now = new Date();
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  // Format for datetime-local input (YYYY-MM-DDTHH:MM)
+  const fmt = d => d.toISOString().slice(0, 16);
+  document.getElementById('startTime').value = fmt(yesterday);
+  document.getElementById('endTime').value = fmt(now);
+}
+initDateTimeDefaults();
+
+axisTypeButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    axisTypeButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const newMode = btn.dataset.value;
+
+    if (newMode !== axisMode) {
+      axisMode = newMode;
+      numericFields.style.display = axisMode === 'numeric' ? '' : 'none';
+      datetimeFields.style.display = axisMode === 'datetime' ? '' : 'none';
+
+      // Clear data when switching modes (data types are incompatible)
+      saveUndo();
+      seriesData = [[]];
+      activeSeriesIndex = 0;
+      renderSeriesButtons();
+      updateChart();
+      showToast(axisMode === 'datetime' ? 'Switched to Date/Time axis' : 'Switched to Numeric axis');
+    }
+  });
+});
+
 // ─── Inspector Toggle ────────────────────────────────────────────────────────
 const inspectorToggle = document.getElementById('inspectorToggle');
 const inspectorPanel = document.getElementById('inspector');
 inspectorToggle.addEventListener('click', () => {
   inspectorPanel.classList.toggle('hidden');
   inspectorToggle.classList.toggle('active');
-  // Give chart time to reflow then update
   setTimeout(() => { if (chart) chart.resize(); }, 220);
 });
 
@@ -71,11 +108,7 @@ function getChartConfig() {
   const pointSize = parseInt(document.getElementById('pointSize').value);
   const lineWidth = parseInt(document.getElementById('lineWidth').value);
   const showGrid = document.getElementById('showGrid').checked;
-  const yMax = parseInt(document.getElementById('yMax').value) || 100;
-  const xMax = parseInt(document.getElementById('xMax').value) || 100;
   const title = document.getElementById('chartTitle').value;
-  const xLabel = document.getElementById('xLabel').value;
-  const yLabel = document.getElementById('yLabel').value;
 
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const gridColor = isDark ? 'rgba(152, 152, 157, 0.12)' : 'rgba(0, 0, 0, 0.05)';
@@ -112,6 +145,74 @@ function getChartConfig() {
     showLine: true,
     order: i === activeSeriesIndex ? 0 : 1,
   }));
+
+  // Build scales based on axis mode
+  let xScale, yScale;
+  let tooltipLabel;
+
+  if (axisMode === 'datetime') {
+    const startTime = new Date(document.getElementById('startTime').value).getTime();
+    const endTime = new Date(document.getElementById('endTime').value).getTime();
+    const yMax = parseInt(document.getElementById('yMax2').value) || 100;
+    const yLabel = document.getElementById('yLabel2').value;
+
+    xScale = {
+      type: 'time',
+      min: startTime,
+      max: endTime,
+      time: {
+        displayFormats: {
+          minute: 'HH:mm',
+          hour: 'HH:mm',
+          day: 'MMM d',
+        },
+      },
+      title: { display: true, text: 'Time', color: textColor, font: { size: 12, weight: '500' } },
+      grid: { display: showGrid, color: gridColor, lineWidth: 0.5 },
+      ticks: { color: textColor, font: { size: 11 }, maxTicksLimit: 12 },
+      border: { color: gridColor },
+    };
+    yScale = {
+      type: 'linear',
+      min: 0,
+      max: yMax,
+      title: { display: !!yLabel, text: yLabel, color: textColor, font: { size: 12, weight: '500' } },
+      grid: { display: showGrid, color: gridColor, lineWidth: 0.5 },
+      ticks: { color: textColor, font: { size: 11 } },
+      border: { color: gridColor },
+    };
+    tooltipLabel = (ctx) => {
+      const d = new Date(ctx.parsed.x);
+      const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const date = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      return `${date} ${time} — ${ctx.parsed.y.toFixed(1)}`;
+    };
+  } else {
+    const yMax = parseInt(document.getElementById('yMax').value) || 100;
+    const xMax = parseInt(document.getElementById('xMax').value) || 100;
+    const xLabel = document.getElementById('xLabel').value;
+    const yLabel = document.getElementById('yLabel').value;
+
+    xScale = {
+      type: 'linear',
+      min: 0,
+      max: xMax,
+      title: { display: !!xLabel, text: xLabel, color: textColor, font: { size: 12, weight: '500' } },
+      grid: { display: showGrid, color: gridColor, lineWidth: 0.5 },
+      ticks: { color: textColor, font: { size: 11 } },
+      border: { color: gridColor },
+    };
+    yScale = {
+      type: 'linear',
+      min: 0,
+      max: yMax,
+      title: { display: !!yLabel, text: yLabel, color: textColor, font: { size: 12, weight: '500' } },
+      grid: { display: showGrid, color: gridColor, lineWidth: 0.5 },
+      ticks: { color: textColor, font: { size: 11 } },
+      border: { color: gridColor },
+    };
+    tooltipLabel = (ctx) => `(${ctx.parsed.x.toFixed(1)}, ${ctx.parsed.y.toFixed(1)})`;
+  }
 
   return {
     type: 'scatter',
@@ -153,30 +254,11 @@ function getChartConfig() {
           displayColors: false,
           callbacks: {
             title: () => '',
-            label: (ctx) => `(${ctx.parsed.x.toFixed(1)}, ${ctx.parsed.y.toFixed(1)})`,
+            label: tooltipLabel,
           },
         },
       },
-      scales: {
-        x: {
-          type: 'linear',
-          min: 0,
-          max: xMax,
-          title: { display: !!xLabel, text: xLabel, color: textColor, font: { size: 12, weight: '500' } },
-          grid: { display: showGrid, color: gridColor, lineWidth: 0.5 },
-          ticks: { color: textColor, font: { size: 11 } },
-          border: { color: gridColor },
-        },
-        y: {
-          type: 'linear',
-          min: 0,
-          max: yMax,
-          title: { display: !!yLabel, text: yLabel, color: textColor, font: { size: 12, weight: '500' } },
-          grid: { display: showGrid, color: gridColor, lineWidth: 0.5 },
-          ticks: { color: textColor, font: { size: 11 } },
-          border: { color: gridColor },
-        },
-      },
+      scales: { x: xScale, y: yScale },
     },
   };
 }
@@ -234,10 +316,7 @@ document.getElementById('addSeriesBtn').addEventListener('click', () => {
 });
 
 // ─── Point Interaction (PointerEvent API) ────────────────────────────────────
-// Using pointer events for unified mouse + touch handling.
-// This fixes the macOS bug where mousedown/mouseup gets consumed by Chart.js internals.
-
-const DRAG_THRESHOLD = 5; // pixels moved before counting as drag
+const DRAG_THRESHOLD = 5;
 
 function getCanvasPoint(e) {
   const rect = canvas.getBoundingClientRect();
@@ -280,9 +359,27 @@ function findNearestPoint(canvasX, canvasY, threshold = 15) {
   return nearestIdx;
 }
 
+function getAxisBounds() {
+  if (axisMode === 'datetime') {
+    const startTime = new Date(document.getElementById('startTime').value).getTime();
+    const endTime = new Date(document.getElementById('endTime').value).getTime();
+    const yMax = parseInt(document.getElementById('yMax2').value) || 100;
+    return { xMin: startTime, xMax: endTime, yMin: 0, yMax };
+  } else {
+    const xMax = parseInt(document.getElementById('xMax').value) || 100;
+    const yMax = parseInt(document.getElementById('yMax').value) || 100;
+    return { xMin: 0, xMax, yMin: 0, yMax };
+  }
+}
+
 function snapValue(val, gridSize) {
   const snap = document.getElementById('snapToGrid').checked;
   if (!snap) return val;
+  if (axisMode === 'datetime') {
+    // Snap to interval minutes
+    const interval = (parseInt(document.getElementById('xScaleMin').value) || 30) * 60 * 1000;
+    return Math.round(val / interval) * interval;
+  }
   const step = gridSize || 5;
   return Math.round(val / step) * step;
 }
@@ -299,9 +396,7 @@ function isInChartArea(canvasX, canvasY) {
 
 // ─── Pointer Events ──────────────────────────────────────────────────────────
 canvas.addEventListener('pointerdown', (e) => {
-  if (e.button === 2) return; // right-click handled by contextmenu
-
-  // Capture pointer for reliable tracking
+  if (e.button === 2) return;
   canvas.setPointerCapture(e.pointerId);
 
   const { canvasX, canvasY } = getCanvasPoint(e);
@@ -323,7 +418,6 @@ canvas.addEventListener('pointermove', (e) => {
   const { canvasX, canvasY } = getCanvasPoint(e);
 
   if (draggedPointIndex !== null && pointerDownPos) {
-    // Check if we've moved beyond threshold to count as drag
     const dx = canvasX - pointerDownPos.canvasX;
     const dy = canvasY - pointerDownPos.canvasY;
     const moved = Math.sqrt(dx * dx + dy * dy);
@@ -334,18 +428,16 @@ canvas.addEventListener('pointermove', (e) => {
 
     if (isDragging) {
       const { x, y } = canvasToData(canvasX, canvasY);
-      const yMax = parseInt(document.getElementById('yMax').value) || 100;
-      const xMax = parseInt(document.getElementById('xMax').value) || 100;
+      const bounds = getAxisBounds();
 
       seriesData[activeSeriesIndex][draggedPointIndex] = {
-        x: clamp(snapValue(x, xMax / 20), 0, xMax),
-        y: clamp(snapValue(y, yMax / 20), 0, yMax),
+        x: clamp(axisMode === 'numeric' ? snapValue(x, bounds.xMax / 20) : snapValue(x), bounds.xMin, bounds.xMax),
+        y: clamp(snapValue(y, bounds.yMax / 20), bounds.yMin, bounds.yMax),
       };
       sortActiveData();
       updateChart();
     }
   } else {
-    // Cursor feedback
     const nearIdx = findNearestPoint(canvasX, canvasY);
     if (isInChartArea(canvasX, canvasY)) {
       canvas.style.cursor = nearIdx >= 0 ? 'grab' : 'crosshair';
@@ -357,14 +449,12 @@ canvas.addEventListener('pointermove', (e) => {
 
 canvas.addEventListener('pointerup', (e) => {
   if (e.button === 2) return;
-
   canvas.releasePointerCapture(e.pointerId);
 
   const { canvasX, canvasY } = getCanvasPoint(e);
 
   if (draggedPointIndex !== null) {
     if (!isDragging) {
-      // Click on existing point without dragging — revert undo save
       undoStack.pop();
     }
     draggedPointIndex = null;
@@ -374,7 +464,6 @@ canvas.addEventListener('pointerup', (e) => {
     return;
   }
 
-  // Check if pointer stayed near start (no drag) — this is an "add point" click
   if (pointerDownPos) {
     const dx = canvasX - pointerDownPos.canvasX;
     const dy = canvasY - pointerDownPos.canvasY;
@@ -382,13 +471,15 @@ canvas.addEventListener('pointerup', (e) => {
 
     if (moved <= DRAG_THRESHOLD && isInChartArea(canvasX, canvasY)) {
       const { x, y } = canvasToData(canvasX, canvasY);
-      const yMax = parseInt(document.getElementById('yMax').value) || 100;
-      const xMax = parseInt(document.getElementById('xMax').value) || 100;
+      const bounds = getAxisBounds();
 
-      if (x >= 0 && x <= xMax && y >= 0 && y <= yMax) {
+      if (x >= bounds.xMin && x <= bounds.xMax && y >= bounds.yMin && y <= bounds.yMax) {
         saveUndo();
-        const snappedX = clamp(snapValue(x, xMax / 20), 0, xMax);
-        const snappedY = clamp(snapValue(y, yMax / 20), 0, yMax);
+        const snappedX = clamp(
+          axisMode === 'numeric' ? snapValue(x, bounds.xMax / 20) : snapValue(x),
+          bounds.xMin, bounds.xMax
+        );
+        const snappedY = clamp(snapValue(y, bounds.yMax / 20), bounds.yMin, bounds.yMax);
         seriesData[activeSeriesIndex].push({ x: snappedX, y: snappedY });
         sortActiveData();
         updateChart();
@@ -404,7 +495,6 @@ canvas.addEventListener('pointerup', (e) => {
 });
 
 canvas.addEventListener('pointercancel', (e) => {
-  // Clean up on cancel
   if (draggedPointIndex !== null && !isDragging) {
     undoStack.pop();
   }
@@ -428,7 +518,6 @@ canvas.addEventListener('contextmenu', (e) => {
   }
 });
 
-// Prevent default touch actions on canvas (avoids scroll/zoom interference)
 canvas.style.touchAction = 'none';
 
 // ─── Undo / Redo ─────────────────────────────────────────────────────────────
@@ -518,7 +607,7 @@ document.getElementById('copyBtn').addEventListener('click', async () => {
 });
 
 // ─── Settings Changes ────────────────────────────────────────────────────────
-const settingIds = ['chartTitle', 'xLabel', 'yLabel', 'yMax', 'xMax', 'interpolation', 'pointSize', 'lineWidth', 'showGrid', 'snapToGrid'];
+const settingIds = ['chartTitle', 'xLabel', 'yLabel', 'yMax', 'xMax', 'interpolation', 'pointSize', 'lineWidth', 'showGrid', 'snapToGrid', 'startTime', 'endTime', 'xScaleMin', 'yMax2', 'yLabel2'];
 settingIds.forEach(id => {
   const el = document.getElementById(id);
   if (el) {
@@ -568,7 +657,6 @@ function showToast(msg) {
     document.body.appendChild(toast);
   }
   toast.textContent = msg;
-  // Force reflow for re-trigger animation
   toast.classList.remove('show');
   void toast.offsetWidth;
   toast.classList.add('show');

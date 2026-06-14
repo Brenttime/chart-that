@@ -393,7 +393,8 @@ body {
 }
 
 .form-group input[type="text"],
-.form-group input[type="number"] {
+.form-group input[type="number"],
+.form-group input[type="datetime-local"] {
   width: 100%;
   padding: 7px 10px;
   border: 0.5px solid var(--border);
@@ -404,6 +405,10 @@ body {
   font-family: var(--font);
   outline: none;
   transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-group input[type="datetime-local"] {
+  font-size: 12px;
 }
 
 .form-group input:focus {
