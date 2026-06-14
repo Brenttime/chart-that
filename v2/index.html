@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chart That</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5.5' fill='url(%23g)'/%3E%3Cpath d='M5 17L9.5 11L13 14L19 7' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='24' y2='24'%3E%3Cstop stop-color='%23007AFF'/%3E%3Cstop offset='1' stop-color='%235856D6'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E">
+</head>
+<body>
+  <div class="app-window">
+    <!-- macOS-style title bar -->
+    <div class="title-bar">
+      <div class="title-bar-left"></div>
+      <div class="title-bar-center">
+        <div class="app-identity">
+          <svg class="app-logo" width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <rect width="24" height="24" rx="5.5" fill="url(#logoGrad)"/>
+            <path d="M5 17L9.5 11L13 14L19 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="5" cy="17" r="1.5" fill="white"/>
+            <circle cx="9.5" cy="11" r="1.5" fill="white"/>
+            <circle cx="13" cy="14" r="1.5" fill="white"/>
+            <circle cx="19" cy="7" r="1.5" fill="white"/>
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="24" y2="24">
+                <stop offset="0%" stop-color="#007AFF"/>
+                <stop offset="100%" stop-color="#5856D6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="window-title">Chart That</span>
+        </div>
+      </div>
+      <div class="title-bar-right">
+        <button id="themeToggle" class="title-bar-btn" title="Toggle appearance" aria-label="Toggle theme">
+          <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg id="moonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- macOS-style toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-section">
+        <button id="undoBtn" class="toolbar-btn" title="Undo (⌘Z)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 10h13a4 4 0 0 1 0 8H8"/><polyline points="7 6 3 10 7 14"/></svg>
+          <span class="toolbar-btn-label">Undo</span>
+        </button>
+        <button id="redoBtn" class="toolbar-btn" title="Redo (⌘⇧Z)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10H8a4 4 0 0 0 0 8h8"/><polyline points="17 6 21 10 17 14"/></svg>
+          <span class="toolbar-btn-label">Redo</span>
+        </button>
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-section">
+        <button id="clearBtn" class="toolbar-btn" title="Clear active series">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7l16 0M10 11l0 6M14 11l0 6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
+          <span class="toolbar-btn-label">Clear</span>
+        </button>
+        <button id="clearAllBtn" class="toolbar-btn danger" title="Clear all series">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+          <span class="toolbar-btn-label">Reset</span>
+        </button>
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-section">
+        <button id="exportPng" class="toolbar-btn" title="Export as PNG">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span class="toolbar-btn-label">Export</span>
+        </button>
+        <button id="copyBtn" class="toolbar-btn" title="Copy to clipboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span class="toolbar-btn-label">Copy</span>
+        </button>
+      </div>
+      <div class="toolbar-spacer"></div>
+      <div class="toolbar-section">
+        <button id="inspectorToggle" class="toolbar-btn active" title="Toggle Inspector">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+          <span class="toolbar-btn-label">Inspector</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main content area -->
+    <div class="content-area">
+      <!-- Chart canvas (main stage) -->
+      <div class="canvas-area">
+        <!-- Series pills above chart -->
+        <div class="series-strip">
+          <div id="seriesButtons" class="series-buttons"></div>
+          <button id="addSeriesBtn" class="add-series-btn" title="Add series">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="chartCanvas"></canvas>
+          <div class="chart-hint" id="chartHint">
+            <div class="hint-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            </div>
+            <p><strong>Click</strong> to add points</p>
+            <p><strong>Drag</strong> to reposition</p>
+            <p><strong>Right-click</strong> to delete</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inspector sidebar (like Keynote/Numbers) -->
+      <aside class="inspector" id="inspector">
+        <div class="inspector-content">
+          <!-- Chart section -->
+          <div class="inspector-section">
+            <div class="section-header">Chart</div>
+            <div class="form-group">
+              <label for="chartTitle">Title</label>
+              <input type="text" id="chartTitle" placeholder="My Chart" value="My Chart">
+            </div>
+          </div>
+
+          <!-- Axes section -->
+          <div class="inspector-section">
+            <div class="section-header">Axes</div>
+            <div class="form-row">
+              <div class="form-group half">
+                <label for="xLabel">X Label</label>
+                <input type="text" id="xLabel" placeholder="Time" value="Time">
+              </div>
+              <div class="form-group half">
+                <label for="yLabel">Y Label</label>
+                <input type="text" id="yLabel" placeholder="Value" value="Value">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group half">
+                <label for="xMax">X Max</label>
+                <input type="number" id="xMax" value="100" min="1">
+              </div>
+              <div class="form-group half">
+                <label for="yMax">Y Max</label>
+                <input type="number" id="yMax" value="100" min="1">
+              </div>
+            </div>
+          </div>
+
+          <!-- Line Style section -->
+          <div class="inspector-section">
+            <div class="section-header">Line Style</div>
+            <div class="segmented-control" id="interpolationControl">
+              <button class="seg-btn active" data-value="linear">Linear</button>
+              <button class="seg-btn" data-value="monotone">Smooth</button>
+              <button class="seg-btn" data-value="step">Step</button>
+              <button class="seg-btn" data-value="bezier">Bezier</button>
+            </div>
+          </div>
+
+          <!-- Appearance section -->
+          <div class="inspector-section">
+            <div class="section-header">Appearance</div>
+            <div class="slider-group">
+              <label>Point Size</label>
+              <div class="slider-row">
+                <input type="range" id="pointSize" min="3" max="12" value="6">
+                <span class="slider-value" id="pointSizeVal">6</span>
+              </div>
+            </div>
+            <div class="slider-group">
+              <label>Line Width</label>
+              <div class="slider-row">
+                <input type="range" id="lineWidth" min="1" max="6" value="2">
+                <span class="slider-value" id="lineWidthVal">2</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Display section -->
+          <div class="inspector-section">
+            <div class="section-header">Display</div>
+            <div class="toggle-group">
+              <div class="toggle-item">
+                <span class="toggle-item-label">Grid</span>
+                <label class="switch">
+                  <input type="checkbox" id="showGrid" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-item">
+                <span class="toggle-item-label">Snap to Grid</span>
+                <label class="switch">
+                  <input type="checkbox" id="snapToGrid">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Hidden select for app.js compat -->
+  <select id="interpolation" style="display:none">
+    <option value="linear" selected>Linear</option>
+    <option value="monotone">Smooth</option>
+    <option value="step">Step</option>
+    <option value="bezier">Bezier</option>
+  </select>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

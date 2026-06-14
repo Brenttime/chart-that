@@ -1,0 +1,654 @@
+/* ─── Chart That v2 — macOS / iOS Native Design ─────────────────────────────── */
+
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --surface-secondary: #f0f0f2;
+  --text: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #aeaeb2;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-subtle: rgba(0, 0, 0, 0.04);
+  --accent: #007AFF;
+  --accent-light: rgba(0, 122, 255, 0.08);
+  --danger: #FF3B30;
+  --card-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --window-shadow: 0 24px 80px rgba(0, 0, 0, 0.16), 0 8px 24px rgba(0, 0, 0, 0.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --transition: 0.2s ease;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
+  --titlebar-height: 52px;
+  --toolbar-height: 44px;
+  --inspector-width: 260px;
+}
+
+[data-theme="dark"] {
+  --bg: #1c1c1e;
+  --surface: #2c2c2e;
+  --surface-secondary: #3a3a3c;
+  --text: #f5f5f7;
+  --text-secondary: #98989d;
+  --text-tertiary: #636366;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --accent: #0A84FF;
+  --accent-light: rgba(10, 132, 255, 0.12);
+  --danger: #FF453A;
+  --card-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.05), 0 2px 8px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.3);
+  --window-shadow: 0 24px 80px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ─── Base ────────────────────────────────────────────────────────────────── */
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background var(--transition);
+}
+
+/* ─── App Window (full-browser) ───────────────────────────────────────────── */
+.app-window {
+  width: 100%;
+  height: 100vh;
+  background: var(--surface);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: background var(--transition);
+}
+
+/* ─── Title Bar ───────────────────────────────────────────────────────────── */
+.title-bar {
+  height: var(--titlebar-height);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: var(--surface);
+  border-bottom: 0.5px solid var(--border);
+  -webkit-app-region: drag;
+  flex-shrink: 0;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.title-bar-left {
+  width: 60px;
+}
+
+.title-bar-center {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.app-identity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-logo {
+  flex-shrink: 0;
+}
+
+.window-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.title-bar-right {
+  display: flex;
+  align-items: center;
+}
+
+.title-bar-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.title-bar-btn:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* ─── Toolbar ─────────────────────────────────────────────────────────────── */
+.toolbar {
+  height: var(--toolbar-height);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: var(--surface-secondary);
+  border-bottom: 0.5px solid var(--border);
+  gap: 4px;
+  flex-shrink: 0;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.toolbar-section {
+  display: flex;
+  gap: 2px;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 6px;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.toolbar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-family: var(--font);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.toolbar-btn:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.toolbar-btn:active {
+  transform: scale(0.95);
+}
+
+.toolbar-btn.active {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.toolbar-btn.danger:hover {
+  background: rgba(255, 59, 48, 0.08);
+  color: var(--danger);
+}
+
+.toolbar-btn-label {
+  font-size: 10px;
+  line-height: 1;
+}
+
+/* ─── Content Area ────────────────────────────────────────────────────────── */
+.content-area {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── Canvas Area (main chart) ────────────────────────────────────────────── */
+.canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  min-width: 0;
+}
+
+/* ─── Series Strip ────────────────────────────────────────────────────────── */
+.series-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  margin-bottom: 12px;
+}
+
+.series-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.series-btn {
+  width: 28px;
+  height: 28px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: all var(--transition);
+}
+
+.series-btn.active {
+  opacity: 1;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px currentColor;
+}
+
+.series-btn:hover:not(.active) {
+  opacity: 0.75;
+  transform: scale(1.08);
+}
+
+.add-series-btn {
+  width: 28px;
+  height: 28px;
+  border: 1.5px dashed var(--text-tertiary);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.add-series-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+/* ─── Chart Container ─────────────────────────────────────────────────────── */
+.chart-container {
+  flex: 1;
+  position: relative;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--card-shadow);
+  transition: background var(--transition), border-color var(--transition);
+}
+
+#chartCanvas {
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none;
+}
+
+.chart-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: var(--text-tertiary);
+  pointer-events: none;
+  opacity: 0.6;
+  transition: opacity 0.4s ease;
+}
+
+.chart-hint.hidden {
+  opacity: 0;
+}
+
+.hint-icon {
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+.chart-hint p {
+  margin: 6px 0;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.chart-hint strong {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ─── Inspector Sidebar ───────────────────────────────────────────────────── */
+.inspector {
+  width: var(--inspector-width);
+  background: var(--surface-secondary);
+  border-left: 0.5px solid var(--border);
+  overflow-y: auto;
+  flex-shrink: 0;
+  transition: background var(--transition), border-color var(--transition), width var(--transition), opacity var(--transition);
+}
+
+.inspector.hidden {
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.inspector-content {
+  padding: 16px;
+}
+
+.inspector-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.inspector-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.section-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+/* ─── Form Controls ───────────────────────────────────────────────────────── */
+.form-group {
+  margin-bottom: 10px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+  width: 100%;
+  padding: 7px 10px;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.form-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.form-group.half {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* ─── Segmented Control ───────────────────────────────────────────────────── */
+.segmented-control {
+  display: flex;
+  background: var(--surface);
+  border-radius: var(--radius-xs);
+  padding: 2px;
+  border: 0.5px solid var(--border);
+}
+
+.seg-btn {
+  flex: 1;
+  padding: 6px 4px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.seg-btn.active {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 1px 3px rgba(0, 122, 255, 0.3);
+}
+
+.seg-btn:hover:not(.active) {
+  color: var(--text);
+  background: var(--accent-light);
+}
+
+/* ─── Sliders ─────────────────────────────────────────────────────────────── */
+.slider-group {
+  margin-bottom: 14px;
+}
+
+.slider-group:last-child {
+  margin-bottom: 0;
+}
+
+.slider-group label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider-row input[type="range"] {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.slider-row input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.slider-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 18px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Toggle Switch (iOS-style) ───────────────────────────────────────────── */
+.toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toggle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggle-item-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--surface-secondary);
+  border: 0.5px solid var(--border);
+  border-radius: 26px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.switch-slider::before {
+  content: '';
+  position: absolute;
+  height: 22px;
+  width: 22px;
+  left: 2px;
+  bottom: 1.5px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), 0 0 0.5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.switch input:checked + .switch-slider {
+  background: #34C759;
+  border-color: #34C759;
+}
+
+.switch input:checked + .switch-slider::before {
+  transform: translateX(16px);
+}
+
+/* ─── Toast ───────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-60px);
+  background: var(--surface);
+  color: var(--text);
+  padding: 8px 20px;
+  border-radius: 980px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 0.5px solid var(--border);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+  z-index: 1000;
+  opacity: 0;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .inspector {
+    display: none;
+  }
+
+  .toolbar-btn-label {
+    display: none;
+  }
+
+  .toolbar-btn {
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .traffic-lights {
+    display: none;
+  }
+
+  .canvas-area {
+    padding: 10px;
+  }
+
+  .chart-container {
+    padding: 10px;
+  }
+
+  .toolbar {
+    padding: 0 8px;
+  }
+
+  .toolbar-divider {
+    display: none;
+  }
+}
